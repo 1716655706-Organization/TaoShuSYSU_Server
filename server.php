@@ -7,10 +7,13 @@ try {
 	$dispatcher = new Dispatcher();
 	
 	//$msg = json_decode('{"sid":0, "cid":0, "userName":"wyl", "password":"wyl"}');
-	$msg = json_decode($_POST["msg"]);
+// 	$msg = json_decode($_POST["msg"]);
+// 	$returnMsg = $dispatcher->dispatch($msg);
+// 	echo json_encode($returnMsg);
+	
+	$msg = json_decode('{"sid":0, "cid":0, "userName":"wyl", "password":"wyl"}');
 	$returnMsg = $dispatcher->dispatch($msg);
 	echo json_encode($returnMsg);
-	
 	
 // 	$msg = json_decode('{"sid":0, "cid":1, "userName":"wyl", "password":"wyl"}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
@@ -42,12 +45,16 @@ try {
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 	
-	
+	$msg = json_decode('{"sid":2, "cid":1, "bookId":5}');
+	$returnMsg = $dispatcher->dispatch($msg);
+	echo json_encode($returnMsg);
 	
 	
 }
 catch (Exception $e) {
-	echo $e;
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
 }
 
 ?>

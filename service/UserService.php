@@ -29,6 +29,7 @@ class UserService extends Service{
 	 */
 	public function handle_register($msg) {
 		$returnMsg = array();
+try {	
 		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
 			$userName = $msg->{"userName"};
 			$password = $msg->{"password"};
@@ -62,6 +63,12 @@ class UserService extends Service{
 			return $returnMsg;
 		}
 	}
+catch (Exception $e) {
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
+}
+	}
 	
 	/**
 	 * 处理登录
@@ -70,6 +77,7 @@ class UserService extends Service{
 	 */
 	public function handle_login($msg){
 		$returnMsg = array();
+try {
 		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
 			$userName = $msg->{"userName"};
 			$password = $msg->{"password"};
@@ -97,6 +105,12 @@ class UserService extends Service{
 			$returnMsg["returnCode"] = 0;
 			return $returnMsg;
 		}
+	}
+catch (Exception $e) {
+		$returnMsg = array();
+		$returnMsg["returnCode"] = 0;
+		echo $returnMsg;
+}
 	}
 }
 ?>

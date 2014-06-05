@@ -29,6 +29,7 @@ class CommentService extends Service{
 	 */
 	public function addComment($msg) {
 		$returnMsg = array();
+try{
 		if (isset($msg->{"bookId"}) && isset($msg->{"userId"})) {
 			$bookId = $msg->{"bookId"};
 			$authorId = $msg->{"userId"};
@@ -55,6 +56,12 @@ class CommentService extends Service{
 			$returnMsg["returnCode"] = 0;
 			return $returnMsg;
 		}
+		}
+catch (Exception $e) {
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
+}
 	}
 	
 	/**
@@ -62,9 +69,11 @@ class CommentService extends Service{
 	 * @param  $msg
 	 * @return multitype:number
 	 */
-	public function getCommentByBookId($msg){
+	public function getCommentsByBookId($msg){
 		$returnMsg = array();
+try{
 		if (isset($msg->{"bookId"})) {
+			$returnMsg["returnCode"] = 1;
 			$bookId = $msg->{"bookId"};
 			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
@@ -73,23 +82,38 @@ class CommentService extends Service{
 			/*是否存在*/
 			$sql ="SELECT * FROM comment WHERE bookId = '$bookId'";
 			$result= mysql_query($sql);
-			mysql_close($con);
+			
+			$tempList = array();
 			while ($row = mysql_fetch_array($result)) {
-				if ($userName == $row["userName"] && $password == $row["password"]) {
-					$returnMsg["returnCode"] = 1;
-					$returnMsg["userId"] = $row["userId"];
-					return $returnMsg;
+				$tempCommit = array();
+				$authorId = $row["authorId"];
+				$tempCommit["authorId"] = $row["authorId"];
+				$tempCommit["content"] = $row["content"];
+				$tempCommit["time"] = $row["time"];
+				
+				/*获取作者的名字*/
+				$sql_2 = "SELECT * FROM userinfo WHERE userId = '$authorId'";
+				$result_2 = mysql_query($sql_2);
+				if ($row_2 = mysql_fetch_array($result_2)) {
+					$tempCommit["authorName"] = $row_2["userName"];
 				}
-				else {
-					$returnMsg["returnCode"] = -1;
-					return $returnMsg;
-				}
+				array_push($tempList, $tempCommit);
 			}
+			
+			$returnMsg["commitList"] = $tempList;
+			mysql_close($con);
+			return $returnMsg;
 		}
 		else {
 			$returnMsg["returnCode"] = 0;
 			return $returnMsg;
 		}
+		}
+catch (Exception $e) {
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
+}
 	}
 }
 ?>

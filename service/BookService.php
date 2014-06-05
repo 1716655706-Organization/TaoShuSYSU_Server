@@ -31,6 +31,7 @@ class BookService extends Service{
 	 */
 	public function addBookInfo($msg) {
 		$returnMsg = array();
+try {
 		if (isset($msg->{"bookName"}))  {
 			$bookId;
 			$bookName = $msg->{"bookName"};
@@ -65,6 +66,12 @@ class BookService extends Service{
 			$returnMsg["returnCode"] = 0;
 			return $returnMsg;
 		}
+		}
+catch (Exception $e) {
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
+}
 	}
 	
 	/**
@@ -72,6 +79,7 @@ class BookService extends Service{
 	 */
 	public function getBooksInfo($msg) {
 		$returnMsg = array();
+try {
 		$startBookId = $msg->{"startBookId"};
 		$size = $msg->{"size"};
 		
@@ -147,6 +155,12 @@ class BookService extends Service{
 			mysql_close($con);
 			return $returnMsg;
 		}
+		}
+catch (Exception $e) {
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
+}
 	}
 	
 	/**
@@ -154,6 +168,7 @@ class BookService extends Service{
 	 */
 	public function getLabelsByBookId($msg) {
 		$returnMsg = array();
+try{
 		if (isset($msg->{"bookId"}))  {
 			$labelArr = array();
 			$bookId = $msg->{"bookId"};
@@ -179,6 +194,12 @@ class BookService extends Service{
 			$returnMsg["returnCode"] = 0;
 			return $returnMsg;
 		}
+		}
+catch (Exception $e) {
+	$returnMsg = array();
+	$returnMsg["returnCode"] = 0;
+	echo $returnMsg;
+}
 	}
 }
 ?>
