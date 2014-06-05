@@ -3,6 +3,7 @@
 include_once 'service/UserService.php';
 include_once 'service/BookService.php';
 include_once 'service/CommentService.php';
+include_once 'database/DatabaseConstant.php';
 
 header("content-type:text/html; charset=utf-8");
 

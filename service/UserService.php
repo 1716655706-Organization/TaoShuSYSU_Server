@@ -33,7 +33,7 @@ class UserService extends Service{
 			$userName = $msg->{"userName"};
 			$password = $msg->{"password"};
 			
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 			
@@ -73,7 +73,7 @@ class UserService extends Service{
 		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
 			$userName = $msg->{"userName"};
 			$password = $msg->{"password"};
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 			

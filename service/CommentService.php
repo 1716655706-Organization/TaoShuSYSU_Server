@@ -35,7 +35,7 @@ class CommentService extends Service{
 			$content = $msg->{"content"};
 			$currentTime = date("y-m-d h:i:s",time());
 			
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 			
@@ -66,7 +66,7 @@ class CommentService extends Service{
 		$returnMsg = array();
 		if (isset($msg->{"bookId"})) {
 			$bookId = $msg->{"bookId"};
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 			

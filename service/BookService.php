@@ -39,7 +39,7 @@ class BookService extends Service{
 			$content = $msg->{"content"};
 			$currentTime = date("y-m-d h:i:s",time());
 			
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 			
@@ -77,13 +77,14 @@ class BookService extends Service{
 		
 		if (-1 == $startBookId)  {
 			$returnMsg["returnCode"] = 1;
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 				
 			/*查询图书信息*/
 			$sql = "SELECT * FROM bookinfo ORDER BY time DESC, bookId DESC LIMIT $size ";
 			$result = mysql_query($sql);
+			$tempList = array();
 			while($row = mysql_fetch_array($result)) {
 				$tempMsg = array();
 				$tempMsg["bookId"] = $row["bookId"];
@@ -99,23 +100,31 @@ class BookService extends Service{
 				if ($row_2 = mysql_fetch_array($result_2)) {
 					$tempMsg["authorName"] = $row_2["userName"];
 				}
-				array_push($returnMsg, $tempMsg);
+				array_push($tempList, $tempMsg);
 				
 			}
+			$returnMsg["bookList"] = $tempList;
 			mysql_close($con);
 			return $returnMsg;
 		}
 		else{
 			$returnMsg["returnCode"] = 1;
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 				
 			/*查询图书信息*/
-			$begin_position = $startBookId - $size;
-			echo $begin_position;
-			$sql = "SELECT * FROM bookinfo ORDER BY time LIMIT $begin_position,$size";
+			/*获取startBookId对应的时间戳*/
+			$time;
+			$sql = "SELECT * FROM bookinfo WHERE bookid = '$startBookId'";
 			$result = mysql_query($sql);
+			while ($row = mysql_fetch_array($result))  {
+				$time = $row["time"];
+			}
+			
+			$sql = "SELECT * FROM bookinfo WHERE bookId < $startBookId ORDER BY time DESC LIMIT $size";
+			$result = mysql_query($sql);
+			$tempList = array();
 			while($row = mysql_fetch_array($result)) {
 				$tempMsg = array();
 				$tempMsg["bookId"] = $row["bookId"];
@@ -131,9 +140,10 @@ class BookService extends Service{
 				if ($row_2 = mysql_fetch_array($result_2)) {
 					$tempMsg["authorName"] = $row_2["userName"];
 				}
-				array_push($returnMsg, $tempMsg);
+				array_push($tempList, $tempMsg);
 				
 			}
+			$returnMsg["bookList"] = $tempList;
 			mysql_close($con);
 			return $returnMsg;
 		}
@@ -148,7 +158,7 @@ class BookService extends Service{
 			$labelArr = array();
 			$bookId = $msg->{"bookId"};
 			
-			$con = mysql_connect("localhost", "root", "");
+			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 			mysql_select_db("taoshusysu_db", $con);
 			mysql_query("set names 'utf8'");
 				
