@@ -6,7 +6,7 @@ header("content-type:text/html; charset=utf-8");
 try {
 	$dispatcher = new Dispatcher();
 	
-	//$msg = json_decode('{"sid":0, "cid":0, "userName":"wyl", "password":"wyl"}');
+// 	//$msg = json_decode('{"sid":0, "cid":0, "userName":"wyl", "password":"wyl"}');
 	$msg = json_decode($_POST["msg"]);
 	$returnMsg = $dispatcher->dispatch($msg);
 	echo json_encode($returnMsg);
@@ -25,7 +25,7 @@ try {
 // 	echo json_encode($returnMsg);
 	
 	
-// 	$msg = json_decode('{"sid":1, "cid":1, "startBookId":6, "size":1}');
+// 	$msg = json_decode('{"sid":1, "cid":1, "startBookId":3, "size":5}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 // 	echo "\n";

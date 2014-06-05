@@ -29,45 +29,44 @@ class UserService extends Service{
 	 */
 	public function handle_register($msg) {
 		$returnMsg = array();
-try {	
-		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
-			$userName = $msg->{"userName"};
-			$password = $msg->{"password"};
-			
-			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
-			mysql_select_db("taoshusysu_db", $con);
-			mysql_query("set names 'utf8'");
-			
-			$sql = "SELECT * FROM userinfo WHERE userName = '$userName'";
-			$result = mysql_query($sql);
-			
-			if (mysql_fetch_array($result)) {
-				$returnMsg["returnCode"] = -1;
+		try {	
+			if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
+				$userName = $msg->{"userName"};
+				$password = $msg->{"password"};
+				
+				$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
+				mysql_select_db("taoshusysu_db", $con);
+				mysql_query("set names 'utf8'");
+				
+				$sql = "SELECT * FROM userinfo WHERE userName = '$userName'";
+				$result = mysql_query($sql);
+				
+				if (mysql_fetch_array($result)) {
+					$returnMsg["returnCode"] = -1;
+					return $returnMsg;
+				}
+				
+				/*插入数据*/
+				mysql_query("INSERT INTO userinfo (userName, password)
+					VAlUES ('$userName', '$password')", $con);
+				
+				/*获取用户id*/
+				$userId = mysql_insert_id();
+				
+				mysql_close($con);
+				$returnMsg["returnCode"] = 1;
+				$returnMsg["userId"] = $userId;			
 				return $returnMsg;
 			}
-			
-			/*插入数据*/
-			mysql_query("INSERT INTO userinfo (userName, password)
-				VAlUES ('$userName', '$password')", $con);
-			
-			/*获取用户id*/
-			$userId = mysql_insert_id();
-			
-			mysql_close($con);
-			$returnMsg["returnCode"] = 1;
-			$returnMsg["userId"] = $userId;			
-			return $returnMsg;
+			else {
+				$returnMsg["returnCode"] = 0;
+				return $returnMsg;
+			}
 		}
-		else {
+		catch (Exception $e) {
 			$returnMsg["returnCode"] = 0;
-			return $returnMsg;
+			echo $returnMsg;
 		}
-	}
-catch (Exception $e) {
-	$returnMsg = array();
-	$returnMsg["returnCode"] = 0;
-	echo $returnMsg;
-}
 	}
 	
 	/**
@@ -76,40 +75,39 @@ catch (Exception $e) {
 	 */
 	public function handle_login($msg){
 		$returnMsg = array();
-try {
-		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
-			$userName = $msg->{"userName"};
-			$password = $msg->{"password"};
-			$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
-			mysql_select_db("taoshusysu_db", $con);
-			mysql_query("set names 'utf8'");
-			
-			/*是否存在*/
-			$sql ="SELECT * FROM userinfo WHERE userName = '$userName'";
-			$result= mysql_query($sql);
-			mysql_close($con);
-			while ($row = mysql_fetch_array($result)) {
-				if ($userName == $row["userName"] && $password == $row["password"]) {
-					$returnMsg["returnCode"] = 1;
-					$returnMsg["userId"] = $row["userId"];
-					return $returnMsg;
-				}
-				else {
-					$returnMsg["returnCode"] = -1;
-					return $returnMsg;
+		try {
+			if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
+				$userName = $msg->{"userName"};
+				$password = $msg->{"password"};
+				$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
+				mysql_select_db("taoshusysu_db", $con);
+				mysql_query("set names 'utf8'");
+				
+				/*是否存在*/
+				$sql ="SELECT * FROM userinfo WHERE userName = '$userName'";
+				$result= mysql_query($sql);
+				mysql_close($con);
+				while ($row = mysql_fetch_array($result)) {
+					if ($userName == $row["userName"] && $password == $row["password"]) {
+						$returnMsg["returnCode"] = 1;
+						$returnMsg["userId"] = $row["userId"];
+						return $returnMsg;
+					}
+					else {
+						$returnMsg["returnCode"] = -1;
+						return $returnMsg;
+					}
 				}
 			}
+			else {
+				$returnMsg["returnCode"] = 0;
+				return $returnMsg;
+			}
 		}
-		else {
-			$returnMsg["returnCode"] = 0;
-			return $returnMsg;
+		catch (Exception $e) {
+				$returnMsg["returnCode"] = 0;
+				echo $returnMsg;
 		}
-	}
-catch (Exception $e) {
-		$returnMsg = array();
-		$returnMsg["returnCode"] = 0;
-		echo $returnMsg;
-}
 	}
 }
 ?>
