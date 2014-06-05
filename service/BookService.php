@@ -2,6 +2,8 @@
 
 include_once 'Service.php';
 
+header("content-type:text/html; charset=utf-8");
+
 class BookService extends Service{
 	/**
 	 * 用于注册Service的Id
@@ -13,12 +15,14 @@ class BookService extends Service{
 	 */
 	private static $ADDBOOK_ID = 0;
 	private static $GETBOOKSINFO_ID = 1;
+	private static $GETLABELS_ID = 2;
 	/**
 	 * 构造函数，在这里注册相应命令
 	 */
-	public function UserService() {
+	public function BookService() {
 		$this->register(self::$ADDBOOK_ID, "addBookInfo");
 		$this->register(self::$GETBOOKSINFO_ID, "getBooksInfo");
+		$this->register(self::$GETLABELS_ID, "getLabelsByBookId");
 	}
 	
 	/**
@@ -28,41 +32,34 @@ class BookService extends Service{
 	public function addBookInfo($msg) {
 		$returnMsg = array();
 		if (isset($msg->{"bookName"}))  {
+			$bookId;
 			$bookName = $msg->{"bookName"};
 			$authorId = $msg->{"userId"};
 			$labelArr = $msg->{"labelArr"};
 			$content = $msg->{"content"};
-			$currentTime = time();
+			$currentTime = date("y-m-d h:i:s",time());
 			
 			$con = mysql_connect("localhost", "root", "");
 			mysql_select_db("taoshusysu_db", $con);
+			mysql_query("set names 'utf8'");
 			
-			/*插入存在*/
-			mysql_query("INSERT INTO userinfo (bookName,authorId,content)
-				VAlUES ('$bookName', '$authorId','$content')", $con);
+			/*插入图书信息*/
+			mysql_query("INSERT INTO bookinfo (bookName,authorId,content, time)
+				VAlUES ('$bookName', '$authorId','$content','$currentTime')", $con);
 			
 			/*查询刚插入图书信息的id*/
-			$sql = mysql_query("SEARCH * FROM bookinfo WHERE userName = $userName");
-			$row = mysql_fetch_array($sql);
-			while ($rs = mysql_fetch_array($row)) {
-				if ($userName == $rs["userName"]) {
-					$returnMsg["returnCode"] = -1;
-					return $returnMsg;
-				}
-			}
-			/*插入数据*/
-			mysql_query("INSERT INTO userinfo (userName, password) 
-						VAlUES ('$userName', '$password')", $con);
+			$bookId = mysql_insert_id();
 			
-			/*获取id*/
-			$sql = mysql_query("SEARCH * FROM userinfo WHERE userName = $userName");
-			$row = mysql_fetch_array($sql);
-			mysql_close($con);
-			while ($rs = mysql_fetch_array($row)) {
-				$returnMsg["userId"] = intval($rs["userId"]);
-				$returnMsg["returnCode"] = 1;
-				return $returnMsg;
+			/*插入数据*/
+			for ($i = 0; $i < count($labelArr); $i++) {
+				$labelContent = $labelArr[$i];
+				mysql_query("INSERT INTO label (bookId, content)
+					VAlUES ('$bookId', '$labelContent')", $con);
 			}
+			mysql_close($con);
+			
+			$returnMsg["returnCode"] = 1;
+			return $returnMsg;
 		}
 		else {
 			$returnMsg["returnCode"] = 0;
@@ -70,26 +67,103 @@ class BookService extends Service{
 		}
 	}
 	
-	public function handle_login($msg){
+	/**
+	 * 获取图书信息
+	 */
+	public function getBooksInfo($msg) {
 		$returnMsg = array();
-		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
-			$userName = $msg->{"userName"};
-			$password = $msg->{"password"};
+		$startBookId = $msg->{"startBookId"};
+		$size = $msg->{"size"};
+		
+		if (-1 == $startBookId)  {
+			$returnMsg["returnCode"] = 1;
 			$con = mysql_connect("localhost", "root", "");
 			mysql_select_db("taoshusysu_db", $con);
-			/*是否存在*/
-			$sql = mysql_query("SEARCH * FROM userinfo WHERE userName = $userName");
-			$row = mysql_fetch_array($sql);
-			while ($rs = mysql_fetch_array($row)) {
-				if ($userName == $rs["userName"] && $password == $rs["password"]) {
-					$returnMsg["returnCode"] = 1;
-					return $returnMsg;
+			mysql_query("set names 'utf8'");
+				
+			/*查询图书信息*/
+			$sql = "SELECT * FROM bookinfo ORDER BY time DESC, bookId DESC LIMIT $size ";
+			$result = mysql_query($sql);
+			while($row = mysql_fetch_array($result)) {
+				$tempMsg = array();
+				$tempMsg["bookId"] = $row["bookId"];
+				$tempMsg["bookName"] = $row["bookName"];
+				$tempMsg["authorId"] = $row["authorId"];
+				$authorId = $row["authorId"];
+				$tempMsg["content"] = $row["content"];
+				$tempMsg["time"] = $row["time"];
+				
+				/*获取作者的名字*/
+				$sql_2 = "SELECT * FROM userinfo WHERE userId = '$authorId'";
+				$result_2 = mysql_query($sql_2);
+				if ($row_2 = mysql_fetch_array($result_2)) {
+					$tempMsg["authorName"] = $row_2["userName"];
 				}
-				else {
-					$returnMsg["returnCode"] = -1;
-					return $returnMsg;
-				}
+				array_push($returnMsg, $tempMsg);
+				
 			}
+			mysql_close($con);
+			return $returnMsg;
+		}
+		else{
+			$returnMsg["returnCode"] = 1;
+			$con = mysql_connect("localhost", "root", "");
+			mysql_select_db("taoshusysu_db", $con);
+			mysql_query("set names 'utf8'");
+				
+			/*查询图书信息*/
+			$begin_position = $startBookId - $size;
+			echo $begin_position;
+			$sql = "SELECT * FROM bookinfo ORDER BY time LIMIT $begin_position,$size";
+			$result = mysql_query($sql);
+			while($row = mysql_fetch_array($result)) {
+				$tempMsg = array();
+				$tempMsg["bookId"] = $row["bookId"];
+				$tempMsg["bookName"] = $row["bookName"];
+				$tempMsg["authorId"] = $row["authorId"];
+				$authorId = $row["authorId"];
+				$tempMsg["content"] = $row["content"];
+				$tempMsg["time"] = $row["time"];
+				
+				/*获取作者的名字*/
+				$sql_2 = "SELECT * FROM userinfo WHERE userId = '$authorId'";
+				$result_2 = mysql_query($sql_2);
+				if ($row_2 = mysql_fetch_array($result_2)) {
+					$tempMsg["authorName"] = $row_2["userName"];
+				}
+				array_push($returnMsg, $tempMsg);
+				
+			}
+			mysql_close($con);
+			return $returnMsg;
+		}
+	}
+	
+	/**
+	 * 用图书id获取标签
+	 */
+	public function getLabelsByBookId($msg) {
+		$returnMsg = array();
+		if (isset($msg->{"bookId"}))  {
+			$labelArr = array();
+			$bookId = $msg->{"bookId"};
+			
+			$con = mysql_connect("localhost", "root", "");
+			mysql_select_db("taoshusysu_db", $con);
+			mysql_query("set names 'utf8'");
+				
+			/*查询标签信息*/
+			$sql = "SELECT * FROM label WHERE bookId = '$bookId'";
+			$result = mysql_query($sql);
+			while ($row = mysql_fetch_array($result)) {
+				array_push($labelArr, $row["content"]);
+			}
+			
+			mysql_close($con);
+				
+			$returnMsg["returnCode"] = 1;
+			array_push($returnMsg, $labelArr);
+			return $returnMsg;
 		}
 		else {
 			$returnMsg["returnCode"] = 0;

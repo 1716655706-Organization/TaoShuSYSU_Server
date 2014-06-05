@@ -2,6 +2,8 @@
 
 include_once 'Service.php';
 
+header("content-type:text/html; charset=utf-8");
+
 class UserService extends Service{
 	/**
 	 * 用于注册Service的Id
@@ -30,30 +32,30 @@ class UserService extends Service{
 		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {
 			$userName = $msg->{"userName"};
 			$password = $msg->{"password"};
+			
 			$con = mysql_connect("localhost", "root", "");
 			mysql_select_db("taoshusysu_db", $con);
-			/*是否已存在*/
-			$sql = mysql_query("SEARCH * FROM userinfo WHERE userName = $userName");
-			$row = mysql_fetch_array($sql);
-			while ($rs = mysql_fetch_array($row)) {
-				if ($userName == $rs["userName"]) {
-					$returnMsg["returnCode"] = -1;
-					return $returnMsg;
-				}
-			}
-			/*插入数据*/
-			mysql_query("INSERT INTO userinfo (userName, password) 
-						VAlUES ('$userName', '$password')", $con);
+			mysql_query("set names 'utf8'");
 			
-			/*获取id*/
-			$sql = mysql_query("SEARCH * FROM userinfo WHERE userName = $userName");
-			$row = mysql_fetch_array($sql);
-			mysql_close($con);
-			while ($rs = mysql_fetch_array($row)) {
-				$returnMsg["userId"] = intval($rs["userId"]);
-				$returnMsg["returnCode"] = 1;
+			$sql = "SELECT * FROM userinfo WHERE userName = '$userName'";
+			$result = mysql_query($sql);
+			
+			if (mysql_fetch_array($result)) {
+				$returnMsg["returnCode"] = -1;
 				return $returnMsg;
 			}
+			
+			/*插入数据*/
+			mysql_query("INSERT INTO userinfo (userName, password)
+				VAlUES ('$userName', '$password')", $con);
+			
+			/*获取用户id*/
+			$userId = mysql_insert_id();
+			
+			mysql_close($con);
+			$returnMsg["returnCode"] = 1;
+			$returnMsg["userId"] = $userId;			
+			return $returnMsg;
 		}
 		else {
 			$returnMsg["returnCode"] = 0;
@@ -73,12 +75,16 @@ class UserService extends Service{
 			$password = $msg->{"password"};
 			$con = mysql_connect("localhost", "root", "");
 			mysql_select_db("taoshusysu_db", $con);
+			mysql_query("set names 'utf8'");
+			
 			/*是否存在*/
-			$sql = mysql_query("SEARCH * FROM userinfo WHERE userName = $userName");
-			$row = mysql_fetch_array($sql);
-			while ($rs = mysql_fetch_array($row)) {
-				if ($userName == $rs["userName"] && $password == $rs["password"]) {
+			$sql ="SELECT * FROM userinfo WHERE userName = '$userName'";
+			$result= mysql_query($sql);
+			mysql_close($con);
+			while ($row = mysql_fetch_array($result)) {
+				if ($userName == $row["userName"] && $password == $row["password"]) {
 					$returnMsg["returnCode"] = 1;
+					$returnMsg["userId"] = $row["userId"];
 					return $returnMsg;
 				}
 				else {
