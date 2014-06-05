@@ -30,7 +30,7 @@ class CommentService extends Service{
 	public function addComment($msg) {
 		$returnMsg = array();
 		try{
-			if (isset($msg->{"bookId"}) && isset($msg->{"userId"})) {
+			if (isset($msg->{"bookId"}) && isset($msg->{"userId"}) && isset($msg->{"content"})) {
 				$bookId = $msg->{"bookId"};
 				$authorId = $msg->{"userId"};
 				$content = $msg->{"content"};
@@ -45,7 +45,6 @@ class CommentService extends Service{
 					VAlUES ('$bookId', '$authorId','$content','$currentTime')", $con);
 				/*获取id*/
 				$commentId = mysql_insert_id();
-				echo $commentId;
 				
 				$returnMsg["returnCode"] = 1;
 				$returnMsg["commentId"] = $commentId;
@@ -59,7 +58,7 @@ class CommentService extends Service{
 		}
 		catch (Exception $e) {
 			$returnMsg["returnCode"] = 0;
-			echo $returnMsg;
+			return $returnMsg;
 		}
 	}
 	
@@ -109,7 +108,7 @@ class CommentService extends Service{
 		}
 		catch (Exception $e) {
 			$returnMsg["returnCode"] = 0;
-			echo $returnMsg;
+			return $returnMsg;
 		}
 	}
 }

@@ -11,7 +11,7 @@ try {
 	$returnMsg = $dispatcher->dispatch($msg);
 	echo json_encode($returnMsg);
 	
-// 	$msg = json_decode('{"sid":0, "cid":0, "userName":"wyl", "password":"wyl"}');
+// 	$msg = json_decode('{"sid":0, "cid":0, "userName":"z", "password":"zzz"}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 	

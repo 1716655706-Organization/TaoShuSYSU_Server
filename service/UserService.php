@@ -65,7 +65,7 @@ class UserService extends Service{
 		}
 		catch (Exception $e) {
 			$returnMsg["returnCode"] = 0;
-			echo $returnMsg;
+			return $returnMsg;
 		}
 	}
 	
@@ -106,7 +106,7 @@ class UserService extends Service{
 		}
 		catch (Exception $e) {
 				$returnMsg["returnCode"] = 0;
-				echo $returnMsg;
+				return $returnMsg;
 		}
 	}
 }
