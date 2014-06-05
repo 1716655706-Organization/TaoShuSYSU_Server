@@ -82,22 +82,22 @@ class CommentService extends Service{
 				
 				$tempList = array();
 				while ($row = mysql_fetch_array($result)) {
-					$tempCommit = array();
+					$tempComment = array();
 					$authorId = $row["authorId"];
-					$tempCommit["authorId"] = $row["authorId"];
-					$tempCommit["content"] = $row["content"];
-					$tempCommit["time"] = $row["time"];
+					$tempComment["authorId"] = $row["authorId"];
+					$tempComment["content"] = $row["content"];
+					$tempComment["time"] = $row["time"];
 					
 					/*获取作者的名字*/
 					$sql_2 = "SELECT * FROM userinfo WHERE userId = '$authorId'";
 					$result_2 = mysql_query($sql_2);
 					if ($row_2 = mysql_fetch_array($result_2)) {
-						$tempCommit["authorName"] = $row_2["userName"];
+						$tempComment["authorName"] = $row_2["userName"];
 					}
-					array_push($tempList, $tempCommit);
+					array_push($tempList, $tempComment);
 				}
 				
-				$returnMsg["commitList"] = $tempList;
+				$returnMsg["commentList"] = $tempList;
 				mysql_close($con);
 				return $returnMsg;
 			}
