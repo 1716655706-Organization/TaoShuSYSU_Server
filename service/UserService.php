@@ -61,6 +61,11 @@ class UserService extends Service{
 		}
 	}
 	
+	/**
+	 * 处理登录
+	 * @param  $msg
+	 * @return multitype:number
+	 */
 	public function handle_login($msg){
 		$returnMsg = array();
 		if (isset($msg->{"userName"}) && isset($msg->{"password"})) {

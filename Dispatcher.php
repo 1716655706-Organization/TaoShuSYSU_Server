@@ -1,6 +1,7 @@
 <?php
 
 include_once 'service/UserService.php';
+include_once 'service/BookService.php';
 
 /**
  * 分发器，根据sid分发给不同的service进行相关操作
@@ -18,6 +19,7 @@ class Dispatcher {
 	 */
 	public function Dispatcher() {
 		$this->register(UserService::$SERVICE_ID, new UserService());
+		$this->register(BookService::$SERVICE_ID, new BookService());
 	}
 	
 	/**
