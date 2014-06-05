@@ -67,7 +67,6 @@ catch (Exception $e) {
 	/**
 	 * 处理获取评论
 	 * @param  $msg
-	 * @return multitype:number
 	 */
 	public function getCommentsByBookId($msg){
 		$returnMsg = array();

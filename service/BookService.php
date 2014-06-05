@@ -26,7 +26,7 @@ class BookService extends Service{
 	}
 	
 	/**
-	 * 用户注册
+	 * 发布图书信息
 	 * @param $msg
 	 */
 	public function addBookInfo($msg) {
