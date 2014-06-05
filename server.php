@@ -7,8 +7,7 @@ try {
 	$dispatcher = new Dispatcher();
 	
 	//$msg = json_decode('{"sid":0, "cid":0, "userName":"wyl", "password":"wyl"}');
-	$msg = $_POST["msg"];
-	echo $msg;
+	$msg = json_decode($_POST["msg"]);
 	$returnMsg = $dispatcher->dispatch($msg);
 	echo json_encode($returnMsg);
 	
