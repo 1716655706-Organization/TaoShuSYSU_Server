@@ -19,6 +19,7 @@ class BookService extends Service{
 	private static $GETBOOKSBYUSERID = 3;
 	private static $GETBOOKSBYBOOKNAME = 4;
 	private static $GETBOOKSBYLABEL = 5;
+	private static $DELETEBOOK = 6;
 	/**
 	 * 构造函数，在这里注册相应命令
 	 */
@@ -29,19 +30,20 @@ class BookService extends Service{
 		$this->register(self::$GETBOOKSBYUSERID, "getBooksByUserId");
 		$this->register(self::$GETBOOKSBYBOOKNAME, "getBooksByBookName");
 		$this->register(self::$GETBOOKSBYLABEL, "getBooksByLabel");
+		$this->register(self::$DELETEBOOK, "deleteBook");
 	}
 	
 	/**
 	 * 发布图书信息
 	 * @param  $msg
 	 * @return $returnMsg 
-	 * {"returnCode":0} ($msg中bookName、content、authorId缺少，或者抛出异常)
+	 * {"returnCode":0} ($msg中bookName、content、userId缺少，或者抛出异常)
 	 * {"returnCode":1} (正常添加图书)
 	 */
 	public function addBookInfo($msg) {
 		$returnMsg = array();
 		try {
-			if (isset($msg->{"bookName"}) && isset($msg->{"content"}) && isset($msg->{"authorId"}) && isset($msg->{"labelArr"}))  {
+			if (isset($msg->{"bookName"}) && isset($msg->{"content"}) && isset($msg->{"userId"}) && isset($msg->{"labelArr"}))  {
 				$bookId;
 				$bookName = $msg->{"bookName"};
 				$authorId = $msg->{"userId"};
@@ -286,7 +288,7 @@ class BookService extends Service{
 						$authorName = $row["userName"];
 					}
 					
-					/*查询图书信息*/
+					
 					/*获取startBookId对应的时间戳*/
 					$time;
 					$sql = "SELECT * FROM bookinfo WHERE bookid = '$startBookId'";
@@ -294,7 +296,8 @@ class BookService extends Service{
 					while ($row = mysql_fetch_array($result))  {
 						$time = $row["time"];
 					}
-	
+					
+					/*查询图书信息*/
 					$sql = "SELECT * FROM bookinfo WHERE authorId = '$authorId' AND bookId < $startBookId ORDER BY time DESC LIMIT $size";
 					$result = mysql_query($sql);
 					$tempList = array();
@@ -330,6 +333,10 @@ class BookService extends Service{
 	
 	/**
 	 * 根据图书名搜索图书
+	 * @param $msg
+	 * @return returnMsg
+	 * {"returnCode":0} ($msg中bookName、startBookId、size缺少，或者抛出异常)
+	 * {"returnCode":1,"bookList":[{"bookId":bookId,"bookName":bookName,"authorId":authorId,"content":content,"time":time,"authorName":authorName},.....]} (成功获取，返回bookList)
 	 */
 	public function getBooksByBookName($msg){
 		$returnMsg = array();
@@ -347,7 +354,7 @@ class BookService extends Service{
 					mysql_query("set names 'utf8'");
 		
 					/*查询图书信息*/
-					$sql = "SELECT * FROM bookinfo WHERE bookName = '$bookName' ORDER BY time DESC, bookId DESC LIMIT $size ";
+					$sql = "SELECT * FROM bookinfo WHERE bookName LIKE '%$bookName%' ORDER BY time DESC, bookId DESC LIMIT $size ";
 					$result = mysql_query($sql);
 					$tempList = array();
 					while($row = mysql_fetch_array($result)) {
@@ -388,7 +395,7 @@ class BookService extends Service{
 					}
 					
 					/*查询图书信息*/
-					$sql = "SELECT * FROM bookinfo WHERE bookName = '$bookName' AND bookId < $startBookId ORDER BY time DESC LIMIT $size";
+					$sql = "SELECT * FROM bookinfo WHERE bookName LIKE '%$bookName%' AND bookId < $startBookId ORDER BY time DESC LIMIT $size";
 					$result = mysql_query($sql);
 					$tempList = array();
 					while($row = mysql_fetch_array($result)) {
@@ -448,7 +455,7 @@ class BookService extends Service{
 					mysql_query("set names 'utf8'");
 		
 					/*根据label获取图书信息*/
-					$sql = "SELECT * FROM label WHERE content = '$label' ORDER BY bookId DESC LIMIT $size";
+					$sql = "SELECT DISTINCT bookId FROM label WHERE content LIKE '%$label%' ORDER BY bookId DESC LIMIT $size";
 					$result = mysql_query($sql);
 					$tempList = array();
 					while($row = mysql_fetch_array($result)) {
@@ -487,7 +494,7 @@ class BookService extends Service{
 		
 					
 					/*根据label获取图书信息*/
-					$sql = "SELECT * FROM label WHERE content = '$label' AND bookId < '$startBookId' ORDER BY bookId DESC LIMIT '$size'";
+					$sql = "SELECT * FROM label WHERE CONTAINS(content,'$label') AND bookId < '$startBookId' ORDER BY bookId DESC LIMIT '$size'";
 					$result = mysql_query($sql);
 					$tempList = array();
 					while($row = mysql_fetch_array($result)) {
@@ -523,6 +530,47 @@ class BookService extends Service{
 				$returnMsg["returnCode"] = 0;
 				return $returnMsg;
 			}	
+		}
+		catch (Exception $e) {
+			$returnMsg["returnCode"] = 0;
+			return $returnMsg;
+		}
+	}
+	
+	/**
+	 * 删除图书
+	 * @param $msg
+	 * @return $returnMsg
+	 * {"returnCode":1} (删除成功)
+	 * {"returnCode":0} ($msg中bookId缺少，或者抛出异常)
+	 */
+	public function deleteBook($msg){
+		$returnMsg = array();
+		try {
+			if (isset($msg->{"bookId"}))  {
+				$bookId = $msg->{"bookId"};
+		
+				$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
+				mysql_select_db("taoshusysu_db", $con);
+				mysql_query("set names 'utf8'");
+				
+				
+				/*删除该图书的有关评论*/
+				mysql_query("DELETE FROM comment WHERE bookId = '$bookId'");
+				/*删除该图书的标签*/
+				mysql_query("DELETE FROM label WHERE bookId = '$bookId'");
+				/*删除图书信息*/
+				mysql_query("DELETE FROM bookinfo WHERE bookId = '$bookId'");
+				
+				mysql_close($con);
+		
+				$returnMsg["returnCode"] = 1;
+				return $returnMsg;
+			}
+			else {
+				$returnMsg["returnCode"] = 0;
+				return $returnMsg;
+			}
 		}
 		catch (Exception $e) {
 			$returnMsg["returnCode"] = 0;

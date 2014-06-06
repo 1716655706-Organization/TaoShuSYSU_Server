@@ -26,6 +26,9 @@ class CommentService extends Service{
 	/**
 	 * 添加评论
 	 * @param $msg
+	 * {"returnCode":0} ($msg中bookId，userId，content缺少，或者抛出异常，或者该图书已被删除)
+	 * {"returnCode":1}  (添加成功)
+	 * 
 	 */
 	public function addComment($msg) {
 		$returnMsg = array();
@@ -39,7 +42,13 @@ class CommentService extends Service{
 				$con = mysql_connect(DatabaseConstant::$MYSQL_HOST, DatabaseConstant::$MYSQL_USERNAME, DatabaseConstant::$MYSQL_PASSWORD);
 				mysql_select_db("taoshusysu_db", $con);
 				mysql_query("set names 'utf8'");
-				
+				/*查询bookId对应的图书是否存在*/
+				$sql = "SELECT * FROM bookinfo WHERE bookId = '$bookId'";
+				$result = mysql_query($sql);
+				if (! $row = mysql_fetch_array($result)) {
+					$returnMsg["returnCode"] = 0;
+					return $returnMsg;
+				}
 				/*插入数据*/
 				mysql_query("INSERT INTO comment (bookId, authorId,content,time)
 					VAlUES ('$bookId', '$authorId','$content','$currentTime')", $con);
@@ -65,6 +74,8 @@ class CommentService extends Service{
 	/**
 	 * 处理获取评论
 	 * @param  $msg
+	 * {"returnCode":0} ($msg中bookId缺少，或者抛出异常)
+	 * {"returnCode":1,"commentList":[{"bookId":bookId,"authorId":authorId,"content":content,"time":time,"authorName":authorName},......]}  (获取成功,返回commentList数组)
 	 */
 	public function getCommentsByBookId($msg){
 		$returnMsg = array();
