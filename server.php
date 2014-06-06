@@ -11,7 +11,7 @@ try {
 	$returnMsg = $dispatcher->dispatch($msg);
 	echo json_encode($returnMsg);
 	
-// 	$msg = json_decode('{"sid":0, "cid":0, "userName":"z", "password":"zzz"}');
+// 	$msg = json_decode('{"sid":0, "cid":0, "userName":"zxw", "password":"zxw"}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 	
@@ -37,6 +37,11 @@ try {
 	
 	
 // 	$msg = json_decode('{"sid":1, "cid":2, "bookId":5}');
+// 	$returnMsg = $dispatcher->dispatch($msg);
+// 	echo json_encode($returnMsg);
+
+	
+// 	$msg = json_decode('{"sid":1, "cid":3, "authorId":1,"startBookId":-1,"size":4}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 	
