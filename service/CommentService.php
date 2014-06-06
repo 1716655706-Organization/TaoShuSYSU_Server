@@ -84,6 +84,7 @@ class CommentService extends Service{
 				while ($row = mysql_fetch_array($result)) {
 					$tempComment = array();
 					$authorId = $row["authorId"];
+					$tempComment["bookId"] = $row["bookId"];
 					$tempComment["authorId"] = $row["authorId"];
 					$tempComment["content"] = $row["content"];
 					$tempComment["time"] = $row["time"];
