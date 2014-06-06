@@ -44,6 +44,14 @@ try {
 // 	$msg = json_decode('{"sid":1, "cid":3, "authorId":1,"startBookId":-1,"size":4}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
+
+// 	$msg = json_decode('{"sid":1, "cid":4, "bookName":"计算机","startBookId":-1,"size":10}');
+// 	$returnMsg = $dispatcher->dispatch($msg);
+// 	echo json_encode($returnMsg);
+
+// 	$msg = json_decode('{"sid":1, "cid":5, "label":"电脑","startBookId":-1,"size":2}');
+// 	$returnMsg = $dispatcher->dispatch($msg);
+// 	echo json_encode($returnMsg);
 	
 	
 // 	$msg = json_decode('{"sid":2, "cid":0, "bookId":5, "userId":1, "content":"现在正急需这本书，求联系"}');
