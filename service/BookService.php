@@ -33,12 +33,15 @@ class BookService extends Service{
 	
 	/**
 	 * 发布图书信息
-	 * @param $msg
+	 * @param  $msg
+	 * @return $returnMsg 
+	 * {"returnCode":0} ($msg中bookName、content、authorId缺少，或者抛出异常)
+	 * {"returnCode":1} (正常添加图书)
 	 */
 	public function addBookInfo($msg) {
 		$returnMsg = array();
 		try {
-			if (isset($msg->{"bookName"}))  {
+			if (isset($msg->{"bookName"}) && isset($msg->{"content"}) && isset($msg->{"authorId"}) && isset($msg->{"labelArr"}))  {
 				$bookId;
 				$bookName = $msg->{"bookName"};
 				$authorId = $msg->{"userId"};
@@ -81,6 +84,10 @@ class BookService extends Service{
 	
 	/**
 	 * 获取图书信息
+	 * @param  $msg
+	 * @return $returnMsg 
+	 * {"returnCode":0} ($msg中startBookId、size缺少，或者抛出异常)
+	 * {"returnCode":1,"bookList":[{"bookId":"", "bookName":"","authorId":"","content":"","time":"","authorId":""},......]}
 	 */
 	public function getBooksInfo($msg) {
 		$returnMsg = array();
@@ -176,6 +183,10 @@ class BookService extends Service{
 	
 	/**
 	 * 用图书id获取标签
+	 * @param  $msg
+	 * @return $returnMsg 
+	 * {"returnCode":0} ($msg中bookId缺少，或者抛出异常)
+	 * {"returnCode":1,"bookList":[{"bookId":"", "bookName":"","authorId":"","content":"","time":"","authorId":""},......]}
 	 */
 	public function getLabelsByBookId($msg) {
 		$returnMsg = array();
@@ -214,8 +225,10 @@ class BookService extends Service{
 	
 	/**
 	 *根据用户id获取他的有关书籍
-	 * @param unknown $msg
-	 * @return multitype:number multitype:
+	 * @param  $msg
+	 * @return $returnMsg 
+	 * {"returnCode":0} ($msg中bookId、startBookId、size缺少，或者抛出异常)
+	 * {"returnCode":1,"bookList":[{"bookId":"", "bookName":"","authorId":"","content":"","time":"","authorId":""},......]}
 	 */
 	public function getBooksByUserId($msg) {
 		$returnMsg = array();
@@ -415,6 +428,10 @@ class BookService extends Service{
 
 	/**
 	 * 根据标签搜索图书
+	 * @param $msg
+	 * @return $returnMsg 
+	 * {"returnCode":0} ($msg中label、startBookId、size缺少，或者抛出异常)
+	 * {"returnCode":1,"bookList":[{"bookId":"", "bookName":"","authorId":"","content":"","time":"","authorId":""},......]}
 	 */
 	public function getBooksByLabel($msg){
 		$returnMsg = array();
