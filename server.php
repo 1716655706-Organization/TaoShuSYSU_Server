@@ -27,7 +27,22 @@ try {
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 	
-// 	$msg = json_decode('{"sid":0, "cid":1, "userName":"赵延霞", "password":"wyl"}');
+// 	$msg = json_decode('{"sid":0, "cid":0, "userName":"小王", "password":"8"}');
+// 	$returnMsg = $dispatcher->dispatch($msg);
+// 	echo json_encode($returnMsg);
+
+	/*使用userId获取用户个人信息*/
+//  	$msg = json_decode('{"sid":0, "cid":2, "userId":15}');
+//  	$returnMsg = $dispatcher->dispatch($msg);
+//  	echo json_encode($returnMsg);
+
+	/*更改用户的个人描述*/
+// 	$msg = json_decode('{"sid":0, "cid":3, "userId":3, "description":"哈哈"}');
+// 	$returnMsg = $dispatcher->dispatch($msg);
+// 	echo json_encode($returnMsg);
+
+	/*更改密码*/
+// 	$msg = json_decode('{"sid":0, "cid":4, "userId":15, "oldPassword":"8", "newPassword":"9"}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 	
@@ -63,7 +78,7 @@ try {
 // 	echo json_encode($returnMsg);
 
 	
-// 	$msg = json_decode('{"sid":1, "cid":3, "authorId":2,"startBookId":-1,"size":4}');
+// 	$msg = json_decode('{"sid":1, "cid":3, "userId":2,"startBookId":-1,"size":4}');
 // 	$returnMsg = $dispatcher->dispatch($msg);
 // 	echo json_encode($returnMsg);
 

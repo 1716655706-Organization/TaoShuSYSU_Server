@@ -229,14 +229,14 @@ class BookService extends Service{
 	 *根据用户id获取他的有关书籍
 	 * @param  $msg
 	 * @return $returnMsg 
-	 * {"returnCode":0} ($msg中bookId、startBookId、size缺少，或者抛出异常)
+	 * {"returnCode":0} ($msg中userId、startBookId、size缺少，或者抛出异常)
 	 * {"returnCode":1,"bookList":[{"bookId":"", "bookName":"","authorId":"","content":"","time":"","authorId":""},......]}
 	 */
 	public function getBooksByUserId($msg) {
 		$returnMsg = array();
 		try {
-			if (isset($msg->{"authorId"}) && isset($msg->{"startBookId"}) && isset($msg->{"size"})) {
-				$authorId = $msg->{"authorId"};
+			if (isset($msg->{"userId"}) && isset($msg->{"startBookId"}) && isset($msg->{"size"})) {
+				$authorId = $msg->{"userId"};
 				$authorName;
 				$startBookId = $msg->{"startBookId"};
 				$size = $msg->{"size"};
